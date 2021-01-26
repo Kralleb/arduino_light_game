@@ -1,40 +1,53 @@
+//Sequence data.
 int lightsArr[] = {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
 int playerArr[] = {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
 
+//lightpin variables.
 int redLedPin = 2;
 int greenLedPin = 4;
 int blueLedPin = 7;
 int yellowLedPin = 8;
 
+//Switchpin variables
 int redSwitchPin = 9;
 int greenSwitchPin = 10;
 int blueSwitchPin = 11;
 int yellowSwitchPin = 12;
 
+//switch state variables.
 int redSwitchState;
 int greenSwitchState;
 int blueSwitchState;
 int yellowSwitchState;
 
+//Led Id for comparing in the Sequence data.
 int redLedNumber = 1;
 int greenLedNumber = 2;
 int blueLedNumber = 3;
 int yellowLedNumber = 4;
 
+//Number of times sequence has repeated.
 int playerCount = 0;
 int lightCount = 0;
 
+//Speed limit variables
 int delayTime = 500;
 int lightDelay = 500;
 
+//Led state
 byte redLedOn = false;
 byte greenLedOn = false;
 byte blueLedOn = false;
 byte yellowLedOn = false;
 
+//Game states
 byte lightsShown = false;
 byte buttonHit = false;
 byte gameOver = false;
+
+//Saves button press and ledNumber to playerArr.
+//Turns off and on light to show player they pressed that lights button.
+//Returns led's state.
 int buttonPressed(byte ledOn, int ledPin, int switchState, int ledNumber) {
   
   if(switchState == 0 && !ledOn) {
@@ -53,6 +66,7 @@ int buttonPressed(byte ledOn, int ledPin, int switchState, int ledNumber) {
   return ledOn;
 }
 
+//Shows lights in sequence to press based on lightsArr (arr[]).
 void showLights(int arr[]) {
   int lightNumber;
   buttonHit = true;
@@ -74,8 +88,9 @@ void showLights(int arr[]) {
       delay(lightDelay);
   }
 }
+//pin setup
 void setup() {
-  // put your setup code here, to run once:
+ 
   pinMode(redLedPin,OUTPUT);
   pinMode(greenLedPin,OUTPUT);
   pinMode(blueLedPin,OUTPUT);
@@ -90,7 +105,9 @@ void setup() {
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+  //Checks the switch state.
+  //States either return 1 or 0.
+  //If 0 switch was pressed.
   redSwitchState = digitalRead(redSwitchPin);
   greenSwitchState = digitalRead(greenSwitchPin);
   blueSwitchState = digitalRead(blueSwitchPin);
@@ -98,7 +115,7 @@ void loop() {
 
   
   if(lightsShown) {
-    
+    //After lights are shown, check for player input.
     if(!buttonHit) {
       if(redSwitchState == 0) {
          redLedOn = buttonPressed(redLedOn,redLedPin,redSwitchState,redLedNumber);
@@ -115,7 +132,11 @@ void loop() {
       blueLedOn = buttonPressed(blueLedOn,blueLedPin,blueSwitchState,blueLedNumber);
       yellowLedOn = buttonPressed(yellowLedOn,yellowLedPin,yellowSwitchState,yellowLedNumber);
         
-    
+    //When player count equals light count, compare playerArr to lightArr.
+    //If playerArr does not match lightArr gameOver = true.
+    //If playerArr matches lightArr, playerArr gets reset to -1 on all values.
+    //playerCount resets to 0.
+    //lightsArr adds one more to the sequence and reshows light sequence.
     if(playerCount == lightCount) {
       delay(delayTime/2);
       digitalWrite(redLedPin,LOW);
@@ -165,7 +186,7 @@ void loop() {
       }
     }
   } else {
-    
+    //If it's less than 15 than add 1 more to the sequence.
     for(int i = lightCount; i < 15; i++) {
       if(lightsArr[i] == -1) {
         lightsArr[i] = round(random(4)) + 1;
